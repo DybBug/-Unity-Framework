@@ -1,5 +1,6 @@
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 namespace BuildingModule
@@ -16,6 +17,15 @@ namespace BuildingModule
         private Building m_PickedBuilding;
         private Vector3 m_PrevCellPosition;
 
+        private event UnityAction m_BuildableEvent;
+        public void RegisterBuildableEventListener(UnityAction listener) => m_BuildableEvent = listener;
+        public void UnregisterBuildableEventListener() => m_BuildableEvent = null;
+
+        private event UnityAction m_UnbuildableEvent;
+        public void RegisterUnbuildableEventListener(UnityAction listener) => m_UnbuildableEvent = listener;
+        public void UnregisterUnbuildableEventListener() => m_UnbuildableEvent = null;
+
+
         #region Unity Method
         private void Awake()
         {
@@ -30,14 +40,20 @@ namespace BuildingModule
 
         #endregion
 
-        public void InitializeWithBuilding(GameObject buildingPrefab)
+        public void CreateBuilding(GameObject buildingPrefab)
         {
             var building = Instantiate(buildingPrefab, Vector3.zero, Quaternion.identity).GetComponent<Building>();
-            CheckBuildableCell(building);
+            if (TryPickup(building))
+            {
+                CheckBuildableCell(building);
+            }
         }
 
-        public void Pickup(Building building)
+        public bool TryPickup(Building building)
         {
+            if (m_PickedBuilding != null)
+                return false;
+
             Debug.Assert(building != null);
 
             var position = m_GridLayout.LocalToCell(building.transform.position);
@@ -53,6 +69,7 @@ namespace BuildingModule
             m_BuildingTileMap.SetTilesBlock(copyArea, tiles);
 
             m_PickedBuilding = building;
+            return true;
         }
 
 
@@ -94,9 +111,6 @@ namespace BuildingModule
 
         private bool CheckBuildableCell(Building building)
         {
-            var tileColor = Color.green;
-            tileColor.a = 0.5f;
-
             var buildingArea = building.Area;
             buildingArea.position = m_GridLayout.WorldToCell(building.transform.position);
 
@@ -106,9 +120,7 @@ namespace BuildingModule
                 var mainTileAsCustomTile = mainTilesInArea[i] as CustomTile;
                 if (mainTileAsCustomTile == null || mainTileAsCustomTile.Type == CustomTile.TileType.Block)
                 {
-                    tileColor = Color.red;
-                    tileColor.a = 0.5f;
-                    building.SetTileColor(tileColor);
+                    m_UnbuildableEvent?.Invoke();
                     return false;
                 }
             }
@@ -116,15 +128,12 @@ namespace BuildingModule
             for (var i = 0; i < buildingTilesInArea.Length; ++i)
             {
                 if (buildingTilesInArea[i] != null)
-                {
-                    tileColor = Color.red;
-                    tileColor.a = 0.5f;
-                    building.SetTileColor(tileColor);
+                { 
+                    m_UnbuildableEvent?.Invoke();
                     return false;
                 }
             }
-
-            building.SetTileColor(tileColor);
+            m_BuildableEvent?.Invoke();
             return true;
         }
 

@@ -70,7 +70,7 @@ public class BuildingListPopup : MonoBehaviour
         if (m_SelectedElement == null)
             return;
 
-        BuildingSystem.Instance.InitializeWithBuilding(m_SelectedElement.Item.Prefab);
+        BuildingSystem.Instance.CreateBuilding(m_SelectedElement.Item.Prefab);
         Close();
     }
 

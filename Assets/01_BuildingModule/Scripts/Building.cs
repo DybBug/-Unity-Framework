@@ -7,15 +7,16 @@ public class Building : MonoBehaviour
 {
     public bool IsPlaced { get; private set; }
 
-    [SerializeField]
-    private BoundsInt m_Area;
+    [SerializeField]private BoundsInt m_Area;
     public BoundsInt Area { get => m_Area; set => m_Area = value; }
 
-    [SerializeField]
-    private Tilemap m_Tilemap;
+    [SerializeField] private Tilemap m_Tilemap;
 
-    [SerializeField]
-    private TilemapRenderer m_TilemapRenderer;
+    [SerializeField] private TilemapRenderer m_TilemapRenderer;
+
+    [SerializeField] private Bubble m_PlaceConfirmBubble;
+
+    private bool m_IsBuildable;
 
     #region Unity
     private void Awake()
@@ -33,38 +34,75 @@ public class Building : MonoBehaviour
             OnInteractEndEvent = OnInteractEnd,
             OnInteractingEvent = OnInteracting
         });
+
+        m_PlaceConfirmBubble.RegisterOnClickedListener(OnPlaceConfirmBubbleClicked);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        m_PlaceConfirmBubble.UnregisterOnClickedListener();
     }
+
     #endregion
 
     public void Place()
     {
+        BuildingSystem.Instance.UnregisterBuildableEventListener();
+        BuildingSystem.Instance.UnregisterUnbuildableEventListener();
+
+        HideTile();
         IsPlaced = true;
+        m_PlaceConfirmBubble.Hide();
     }
 
     public void Pickup()
     {
+        BuildingSystem.Instance.RegisterBuildableEventListener(OnBuildable);
+        BuildingSystem.Instance.RegisterUnbuildableEventListener(OnUnbuildable);
+        ShowTile();
+        m_PlaceConfirmBubble.Show();
         IsPlaced = false;
     }
 
+    private void OnBuildable()
+    {
+        m_IsBuildable = true;
+        var color = Color.green;
+        color.a *= 0.5f;
+        SetTileColor(color);
+
+        m_PlaceConfirmBubble.Activate();
+    }
+
+    private void OnUnbuildable()
+    {
+        m_IsBuildable = false;
+        var color = Color.red;
+        color.a *= 0.5f;
+        SetTileColor(color);
+
+        m_PlaceConfirmBubble.Deactivate();
+    }
+
     public void SetTileColor(Color color) => m_Tilemap.color = color;
-    public void ShowTile() => m_TilemapRenderer.gameObject.SetActive(true);
-    public void HideTile() => m_TilemapRenderer.gameObject.SetActive(false);
+    public void ShowTile() => m_TilemapRenderer.enabled = true;
+    public void HideTile() => m_TilemapRenderer.enabled = false;
+
+    private void OnPlaceConfirmBubbleClicked()
+    {
+        BuildingSystem.Instance.Place();
+    }
+
 
     #region InteractObject
     private void OnInteractBegin(InteractEventParam param)
     {
-        BuildingSystem.Instance.Pickup(this);
+        BuildingSystem.Instance.TryPickup(this);
     }
 
     private void OnInteractEnd(InteractEventParam param)
     {
-        BuildingSystem.Instance.Place();
+
     }
 
     private void OnInteracting(InteractEventParam param)
