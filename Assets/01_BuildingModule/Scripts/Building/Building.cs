@@ -1,11 +1,10 @@
 using BuildingModule;
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class Building : MonoBehaviour
 {
-    public bool IsPlaced { get; private set; }
 
     [SerializeField]private BoundsInt m_Area;
     public BoundsInt Area { get => m_Area; set => m_Area = value; }
@@ -16,12 +15,12 @@ public class Building : MonoBehaviour
 
     [SerializeField] private Bubble m_PlaceConfirmBubble;
 
-    private bool m_IsBuildable;
+    private readonly Dictionary<BuildingStrategy.Type, BuildingStrategy> m_StrategiesByType = new();
 
     #region Unity
     private void Awake()
     {
-
+        RegisterStrategy(new BuildingRelocation(this));
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -45,59 +44,26 @@ public class Building : MonoBehaviour
 
     #endregion
 
-    public void Place()
-    {
-        BuildingSystem.Instance.UnregisterBuildableEventListener();
-        BuildingSystem.Instance.UnregisterUnbuildableEventListener();
-
-        HideTile();
-        IsPlaced = true;
-        m_PlaceConfirmBubble.Hide();
-    }
-
-    public void Pickup()
-    {
-        BuildingSystem.Instance.RegisterBuildableEventListener(OnBuildable);
-        BuildingSystem.Instance.RegisterUnbuildableEventListener(OnUnbuildable);
-        ShowTile();
-        m_PlaceConfirmBubble.Show();
-        IsPlaced = false;
-    }
-
-    private void OnBuildable()
-    {
-        m_IsBuildable = true;
-        var color = Color.green;
-        color.a *= 0.5f;
-        SetTileColor(color);
-
-        m_PlaceConfirmBubble.Activate();
-    }
-
-    private void OnUnbuildable()
-    {
-        m_IsBuildable = false;
-        var color = Color.red;
-        color.a *= 0.5f;
-        SetTileColor(color);
-
-        m_PlaceConfirmBubble.Deactivate();
-    }
-
+    private void RegisterStrategy(BuildingStrategy strategy) => m_StrategiesByType.Add(strategy.StrategyType, strategy);
+    public BuildingStrategy GetStrategy(BuildingStrategy.Type type) => m_StrategiesByType[type];
     public void SetTileColor(Color color) => m_Tilemap.color = color;
     public void ShowTile() => m_TilemapRenderer.enabled = true;
     public void HideTile() => m_TilemapRenderer.enabled = false;
+    public void ShowPlaceConfirmBubble() => m_PlaceConfirmBubble.Show();
+    public void HidePlaceConfirmBubble() => m_PlaceConfirmBubble.Hide();
+    public void ActivatePlaceConfirmBubble() => m_PlaceConfirmBubble.Activate();
+    public void DeactivatePlaceConfirmBubble() => m_PlaceConfirmBubble.Deactivate();
 
     private void OnPlaceConfirmBubbleClicked()
     {
-        BuildingSystem.Instance.Place();
+        GetStrategy(BuildingStrategy.Type.BuildingRelocation).Exit();
     }
 
 
     #region InteractObject
     private void OnInteractBegin(InteractEventParam param)
     {
-        BuildingSystem.Instance.TryPickup(this);
+        GetStrategy(BuildingStrategy.Type.BuildingRelocation).Enter();
     }
 
     private void OnInteractEnd(InteractEventParam param)
@@ -107,7 +73,7 @@ public class Building : MonoBehaviour
 
     private void OnInteracting(InteractEventParam param)
     {
-        BuildingSystem.Instance.FollowBuilding(param.mouseWorldPose);
+        GetStrategy(BuildingStrategy.Type.BuildingRelocation).Update();
     }
     #endregion
 }

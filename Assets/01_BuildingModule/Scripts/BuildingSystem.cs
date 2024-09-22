@@ -1,6 +1,5 @@
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 using UnityEngine.Tilemaps;
 
 namespace BuildingModule
@@ -14,16 +13,8 @@ namespace BuildingModule
         [SerializeField] private Tilemap m_BuildingTileMap;
         [SerializeField] private TileBase m_BuildingTile;
         
-        private Building m_PickedBuilding;
+        private BuildingRelocation m_PickedBuildingRelocation;
         private Vector3 m_PrevCellPosition;
-
-        private event UnityAction m_BuildableEvent;
-        public void RegisterBuildableEventListener(UnityAction listener) => m_BuildableEvent = listener;
-        public void UnregisterBuildableEventListener() => m_BuildableEvent = null;
-
-        private event UnityAction m_UnbuildableEvent;
-        public void RegisterUnbuildableEventListener(UnityAction listener) => m_UnbuildableEvent = listener;
-        public void UnregisterUnbuildableEventListener() => m_UnbuildableEvent = null;
 
 
         #region Unity Method
@@ -43,23 +34,24 @@ namespace BuildingModule
         public void CreateBuilding(GameObject buildingPrefab)
         {
             var building = Instantiate(buildingPrefab, Vector3.zero, Quaternion.identity).GetComponent<Building>();
-            if (TryPickup(building))
+            var BuildingRelocation = building.GetStrategy(BuildingStrategy.Type.BuildingRelocation) as BuildingRelocation;
+            if (TryPickup(BuildingRelocation))
             {
-                CheckBuildableCell(building);
+                CheckBuildableCell(BuildingRelocation);
             }
         }
 
-        public bool TryPickup(Building building)
+        public bool TryPickup(BuildingRelocation BuildingRelocation)
         {
-            if (m_PickedBuilding != null)
+            if (m_PickedBuildingRelocation != null)
                 return false;
 
-            Debug.Assert(building != null);
+            m_PickedBuildingRelocation = BuildingRelocation;
 
-            var position = m_GridLayout.LocalToCell(building.transform.position);
-            var copyArea = building.Area;
+            var position = m_GridLayout.LocalToCell(m_PickedBuildingRelocation.OwnerBuilding.transform.position);
+            var copyArea = m_PickedBuildingRelocation.OwnerBuilding.Area;
             copyArea.position = position;
-            building.Pickup();
+            m_PickedBuildingRelocation.Pickup();
 
             var tiles = m_BuildingTileMap.GetTilesBlock(copyArea);
             for (var i = 0; i < tiles.Length; ++i)
@@ -67,15 +59,13 @@ namespace BuildingModule
                 tiles[i] = null;
             }
             m_BuildingTileMap.SetTilesBlock(copyArea, tiles);
-
-            m_PickedBuilding = building;
             return true;
         }
 
 
         public void FollowBuilding(Vector3 mouseWorldPos)
         {
-            if (m_PickedBuilding == null)
+            if (m_PickedBuildingRelocation == null)
                 return;
 
             var cellPos = m_GridLayout.LocalToCell(mouseWorldPos);
@@ -85,20 +75,20 @@ namespace BuildingModule
                 return;
 
             m_PrevCellPosition = cellPos;
-            m_PickedBuilding.transform.localPosition = m_GridLayout.CellToLocal(cellPos);
+            m_PickedBuildingRelocation.OwnerBuilding.transform.localPosition = m_GridLayout.CellToLocal(cellPos);
 
-            CheckBuildableCell(m_PickedBuilding);
+            CheckBuildableCell(m_PickedBuildingRelocation);
         }
 
         public void Place()
         {
-            if (m_PickedBuilding == null)
+            if (m_PickedBuildingRelocation == null)
                 return;
 
-            var position = m_GridLayout.LocalToCell(m_PickedBuilding.transform.position);
-            var copyArea = m_PickedBuilding.Area;
+            var position = m_GridLayout.LocalToCell(m_PickedBuildingRelocation.OwnerBuilding.transform.position);
+            var copyArea = m_PickedBuildingRelocation.OwnerBuilding.Area;
             copyArea.position = position;
-            m_PickedBuilding.Place();
+            m_PickedBuildingRelocation.Place();
 
             var tiles = m_BuildingTileMap.GetTilesBlock(copyArea);
             for (var i = 0; i < tiles.Length; ++i)
@@ -106,13 +96,13 @@ namespace BuildingModule
                 tiles[i] = m_BuildingTile;
             }
             m_BuildingTileMap.SetTilesBlock(copyArea, tiles);
-            m_PickedBuilding = null;
+            m_PickedBuildingRelocation = null;
         }
 
-        private bool CheckBuildableCell(Building building)
+        private bool CheckBuildableCell(BuildingRelocation BuildingRelocation)
         {
-            var buildingArea = building.Area;
-            buildingArea.position = m_GridLayout.WorldToCell(building.transform.position);
+            var buildingArea = BuildingRelocation.OwnerBuilding.Area;
+            buildingArea.position = m_GridLayout.WorldToCell(BuildingRelocation.OwnerBuilding.transform.position);
 
             var mainTilesInArea = m_MainTileMap.GetTilesBlock(buildingArea);
             for (var i = 0; i < mainTilesInArea.Length; ++i)
@@ -120,7 +110,7 @@ namespace BuildingModule
                 var mainTileAsCustomTile = mainTilesInArea[i] as CustomTile;
                 if (mainTileAsCustomTile == null || mainTileAsCustomTile.Type == CustomTile.TileType.Block)
                 {
-                    m_UnbuildableEvent?.Invoke();
+                    BuildingRelocation.Unbuildable();
                     return false;
                 }
             }
@@ -128,21 +118,19 @@ namespace BuildingModule
             for (var i = 0; i < buildingTilesInArea.Length; ++i)
             {
                 if (buildingTilesInArea[i] != null)
-                { 
-                    m_UnbuildableEvent?.Invoke();
+                {
+                    BuildingRelocation.Unbuildable();
                     return false;
                 }
             }
-            m_BuildableEvent?.Invoke();
+            BuildingRelocation.Buildable();
             return true;
         }
 
-        private bool CanBePlaced(Building building)
+        private bool CanBePlaced(BuildingRelocation BuildingRelocation)
         {
-            Debug.Assert(building != null);
-
-            var position = m_GridLayout.LocalToCell(building.transform.position);
-            var copyArea = building.Area;
+            var position = m_GridLayout.LocalToCell(BuildingRelocation.OwnerBuilding.transform.position);
+            var copyArea = BuildingRelocation.OwnerBuilding.Area;
             copyArea.position = position;
 
             var mainTiles = m_MainTileMap.GetTilesBlock(copyArea);
