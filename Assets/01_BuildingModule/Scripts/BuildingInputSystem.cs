@@ -1,10 +1,10 @@
-using BuildingModule;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class BuildingInputSystem : MonoBehaviour
 {
     private Mouse m_Mouse;
+    private Interact m_InteractObject;
 
     private void Awake()
     {
@@ -18,20 +18,32 @@ public class BuildingInputSystem : MonoBehaviour
 
     private void OnStartedSelect(InputAction.CallbackContext context)
     {
-        var collider = Physics2D.OverlapPoint(Camera.main.ScreenToWorldPoint(m_Mouse.position.ReadValue()));
+        var mouseWorldPos = Camera.main.ScreenToWorldPoint(m_Mouse.position.ReadValue());
+        var collider = Physics2D.OverlapPoint(mouseWorldPos);
         if (collider != null)
         {
-            BuildingSystem.Instance.Pickup(collider.gameObject.GetComponent<Building>());
+            if (collider.TryGetComponent<Interact>(out m_InteractObject))
+            {
+                m_InteractObject.TriggerInteractBegin(m_InteractObject, mouseWorldPos);
+            }
         }
     }
 
     private void OnCanceledSelect(InputAction.CallbackContext context)
     {
-        BuildingSystem.Instance.Place();
+        if (m_InteractObject)
+        {
+            var mouseWorldPos = Camera.main.ScreenToWorldPoint(m_Mouse.position.ReadValue());
+            m_InteractObject.TriggerInteractEnd(m_InteractObject, mouseWorldPos);
+        }
+        m_InteractObject = null;
     }
 
     private void OnPerformedMove(InputAction.CallbackContext context)
     {
-        BuildingSystem.Instance.FollowBuilding(Camera.main.ScreenToWorldPoint(m_Mouse.position.ReadValue()));
+        if (m_InteractObject)
+        {
+            m_InteractObject.TriggerInteracting(m_InteractObject, Camera.main.ScreenToWorldPoint(m_Mouse.position.ReadValue()));
+        }
     }
 }
