@@ -59,7 +59,10 @@ public class Table<T> : Table where T : TableItem
     public T GetItemByKey(string key)
     {
         Debug.Assert(m_ItemsByKey != null);
-        Debug.Assert(m_ItemsByKey.TryGetValue(key, out var item), $"{key} is invalid.");
+
+        var result = m_ItemsByKey.TryGetValue(key, out var item);
+        Debug.Assert(result == true, $"{key} is invalid.");
+
         return item;
     }
 }

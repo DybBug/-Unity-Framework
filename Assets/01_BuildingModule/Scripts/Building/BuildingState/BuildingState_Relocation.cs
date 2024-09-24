@@ -12,10 +12,13 @@ public class BuildingState_Relocation : BuildingState
     {
         BuildingSystem.Instance.TryPickup(Owner);
 
+        Owner.SetBottomBubbleSprite(AssetLoader.LoadSprite("Checked"));
+        Owner.ShowBottomBubble();
+
         Owner.HideTopBubble();
         Owner.OnSelectedEvent += OnInteractBegin;
         Owner.OnDragEvent += OnDrag;
-        Owner.OnPlaceConfirmBubbleClickedEvent += OnPlaceConfirmBubble;
+        Owner.OnBottomBubbleClickedEvent += OnBottomBubble;
     }
 
     protected override void OnUpdate()
@@ -39,7 +42,7 @@ public class BuildingState_Relocation : BuildingState
         BuildingSystem.Instance.FollowBuilding(BuildingInputSystem.Instance.GetMouseWorldPosition());
     }
 
-    private void OnPlaceConfirmBubble()
+    private void OnBottomBubble()
     {
         BuildingSystem.Instance.Place();
         if (!StateParam.isConstructionCompleted)

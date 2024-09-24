@@ -509,7 +509,7 @@ MonoBehaviour:
   m_Tilemap: {fileID: 244169000384009329}
   m_TilemapRenderer: {fileID: 1873398676184925000}
   m_TopBubble: {fileID: 3012434640215922097}
-  m_PlaceConfirmBubble: {fileID: 5303216562130362462}
+  m_BottomBubble: {fileID: 5303216562130362462}
   m_StateSpriteRenderer: {fileID: 8700786552138434570}
 --- !u!114 &2603204242440579472
 MonoBehaviour:
@@ -606,7 +606,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 784254288852186412, guid: 21c215e4318df424484ac7278949d5be, type: 3}
       propertyPath: m_Name
-      value: PlaceConfirmBubble
+      value: BottomBubble
       objectReference: {fileID: 0}
     - target: {fileID: 1334390910913720847, guid: 21c215e4318df424484ac7278949d5be, type: 3}
       propertyPath: m_LocalPosition.x

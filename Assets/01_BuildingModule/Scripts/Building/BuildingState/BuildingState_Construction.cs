@@ -13,6 +13,9 @@ public class BuildingState_Construction : BuildingState
     #region BuildingState
     protected override void OnEnter()
     {
+        Owner.SetBottomBubbleSprite(AssetLoader.LoadSprite("Info"));
+        Owner.HideBottomBubble();
+
         if (m_Timer == null)
         {
             Owner.SetTopBubbleSprite(AssetLoader.LoadSprite("Checked"));
@@ -21,7 +24,7 @@ public class BuildingState_Construction : BuildingState
             Owner.SetStateSprite(AssetLoader.LoadSprite("ShopBuilding"));
             Owner.ShowStateSprite();
 
-            Owner.HidePlaceConfirmBubble();
+            Owner.HideBottomBubble();
 
             m_Timer = new Timer(Owner.Name, Owner.ProcessingDurationMs);
 
@@ -37,6 +40,7 @@ public class BuildingState_Construction : BuildingState
         }
 
         Owner.OnTopBubbleClickedEvent += OnTopBubbleClicked;
+        Owner.OnBottomBubbleClickedEvent += OnBottomBubbleClicked;
         Owner.OnSelectedEvent += OnInteractBegin;
         Owner.OnPressedEvent += OnPressed;
 
@@ -46,6 +50,7 @@ public class BuildingState_Construction : BuildingState
     protected override void OnExit()
     {
         Owner.OnTopBubbleClickedEvent -= OnTopBubbleClicked;
+        Owner.OnBottomBubbleClickedEvent -= OnBottomBubbleClicked;
         Owner.OnSelectedEvent -= OnInteractBegin;
         Owner.OnPressedEvent -= OnPressed;
 
@@ -70,6 +75,11 @@ public class BuildingState_Construction : BuildingState
         Owner.TransitionState(Building.State.Idle);
     }
 
+    private void OnBottomBubbleClicked()
+    {
+        
+    }
+
     private void OnFinishedConstruction(Timer arg0)
     {
         Owner.ShowTopBubble();
@@ -77,6 +87,7 @@ public class BuildingState_Construction : BuildingState
     }
     private void OnInteractBegin(InteractEventParam eventParam)
     {
+        Owner.ShowBottomBubble();
     }
 
     private void OnPressed(InteractEventParam eventParam)

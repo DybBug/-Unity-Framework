@@ -11,7 +11,7 @@ public class BuildingState_Idle : BuildingState
     {
         Owner.HideTopBubble();
         Owner.HideStateSprite();
-        Owner.HidePlaceConfirmBubble();
+        Owner.HideBottomBubble();
 
         Owner.OnSelectedEvent += OnSelected;
         Owner.OnPressedEvent += OnPressed;

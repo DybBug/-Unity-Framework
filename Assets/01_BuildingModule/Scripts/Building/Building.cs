@@ -18,7 +18,7 @@ public class Building : MonoBehaviour
     [SerializeField] private Tilemap m_Tilemap;
     [SerializeField] private TilemapRenderer m_TilemapRenderer;
     [SerializeField] private Bubble m_TopBubble;
-    [SerializeField] private Bubble m_PlaceConfirmBubble;
+    [SerializeField] private Bubble m_BottomBubble;
     [SerializeField] private SpriteRenderer m_StateSpriteRenderer;
 
     public event UnityAction<InteractEventParam> OnSelectedEvent;
@@ -27,11 +27,11 @@ public class Building : MonoBehaviour
     public event UnityAction<InteractEventParam> OnPressedEvent;
 
     public event UnityAction OnTopBubbleClickedEvent;
-    public event UnityAction OnPlaceConfirmBubbleClickedEvent;
+    public event UnityAction OnBottomBubbleClickedEvent;
 
     private long m_PressedStartTimeMs;
     private long m_PressedAccTimeMs;
-    private const long PRESSED_TIME_MS_TO_RELOCATION = 2000;
+    private const long PRESSED_TIME_MS_TO_RELOCATION = 1000;
 
 
     private readonly Dictionary<Building.State, BuildingState> m_StateMap = new();
@@ -64,7 +64,7 @@ public class Building : MonoBehaviour
         interactObject.OnPressEvent += OnPress;
 
         m_TopBubble.OnClickedEvent += OnTopBubbleClicked;
-        m_PlaceConfirmBubble.OnClickedEvent += OnPlaceConfirmBubbleClicked;
+        m_BottomBubble.OnClickedEvent += OnBottomBubbleClicked;
     }
 
     private void OnDestroy()
@@ -76,7 +76,7 @@ public class Building : MonoBehaviour
         interactObject.OnPressEvent -= OnPress;
 
         m_TopBubble.OnClickedEvent -= OnTopBubbleClicked;
-        m_PlaceConfirmBubble.OnClickedEvent -= OnPlaceConfirmBubbleClicked;
+        m_BottomBubble.OnClickedEvent -= OnBottomBubbleClicked;
     }
 
     #endregion
@@ -95,28 +95,35 @@ public class Building : MonoBehaviour
     public void SetTileColor(Color color) => m_Tilemap.color = color;
     public void ShowTile() => m_TilemapRenderer.enabled = true;
     public void HideTile() => m_TilemapRenderer.enabled = false;
-    public void ShowPlaceConfirmBubble() => m_PlaceConfirmBubble.Show();
-    public void HidePlaceConfirmBubble() => m_PlaceConfirmBubble.Hide();
-    public void ActivatePlaceConfirmBubble() => m_PlaceConfirmBubble.Activate();
-    public void DeactivatePlaceConfirmBubble() => m_PlaceConfirmBubble.Deactivate();
+    public void ActivateBottomBubble() => m_BottomBubble.Activate();
+    public void DeactivateBottomBubble() => m_BottomBubble.Deactivate();
+
+    // state
     public void SetStateSprite(Sprite sprite) => m_StateSpriteRenderer.sprite = sprite;
     public void ShowStateSprite() => m_StateSpriteRenderer.transform.parent.gameObject.SetActive(true);
     public void HideStateSprite() => m_StateSpriteRenderer.transform.parent.gameObject.SetActive(false);
+
+    // top bubble;
     public void SetTopBubbleSprite(Sprite sprite) => m_TopBubble.SetImageSprite(sprite);
     public void ShowTopBubble() => m_TopBubble.Show();
     public void HideTopBubble() => m_TopBubble.Hide();
+
+    // bottom bubble
+    public void SetBottomBubbleSprite(Sprite sprite) => m_BottomBubble.SetImageSprite(sprite);
+    public void ShowBottomBubble() => m_BottomBubble.Show();
+    public void HideBottomBubble() => m_BottomBubble.Hide();
 
 
     public void Place()
     {
         HideTile();
-        HidePlaceConfirmBubble();
+        HideBottomBubble();
     }
 
     public void Pickup()
     {
         ShowTile();
-        ShowPlaceConfirmBubble();
+        ShowBottomBubble();
     }
 
     public void Buildable()
@@ -124,7 +131,7 @@ public class Building : MonoBehaviour
         var color = Color.green;
         color.a *= 0.5f;
         SetTileColor(color);
-        ActivatePlaceConfirmBubble();
+        ActivateBottomBubble();
     }
 
     public void Unbuildable()
@@ -132,11 +139,11 @@ public class Building : MonoBehaviour
         var color = Color.red;
         color.a *= 0.5f;
         SetTileColor(color);
-        DeactivatePlaceConfirmBubble();
+        DeactivateBottomBubble();
     }
 
     protected void RegisterState(Building.State state, BuildingState buildingState) => m_StateMap.Add(state, buildingState);
-    protected void OnPlaceConfirmBubbleClicked() => OnPlaceConfirmBubbleClickedEvent?.Invoke();
+    protected void OnBottomBubbleClicked() => OnBottomBubbleClickedEvent?.Invoke();
     protected void OnTopBubbleClicked() => OnTopBubbleClickedEvent?.Invoke();
 
     protected bool IsActivatePress => m_PressedStartTimeMs > 0;
