@@ -523,16 +523,16 @@
             "actions": [
                 {
                     "name": "Select",
-                    "type": "Value",
+                    "type": "Button",
                     "id": "c441b375-2e23-4386-b527-10f300b842af",
-                    "expectedControlType": "Touch",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "Move",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "6e0e2cb9-d5e9-4f11-a758-e9f7ec867c4f",
                     "expectedControlType": "Vector2",
                     "processors": "",

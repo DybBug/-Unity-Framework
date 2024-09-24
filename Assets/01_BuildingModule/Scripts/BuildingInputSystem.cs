@@ -20,6 +20,8 @@ public class BuildingInputSystem : MonoBehaviour
 
     private Mouse m_Mouse;
     private Interact m_InteractObject;
+    private bool m_IsPress;
+    private bool m_IsMove;
 
     private void Awake()
     {
@@ -28,10 +30,26 @@ public class BuildingInputSystem : MonoBehaviour
         var playerInput = GetComponent<PlayerInput>();
         playerInput.actions.FindAction("Select").started += OnStartedSelect;
         playerInput.actions.FindAction("Select").canceled += OnCanceledSelect;
+        playerInput.actions.FindAction("Select").performed += OnPerformedSelect;
+
         playerInput.actions.FindAction("Move").performed += OnPerformedMove;
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Update()
+    {
+        if (m_IsMove)
+        {
+            m_IsMove = m_Mouse.delta.ReadValue() != Vector2.zero;
+            m_IsPress = false;
+        }
+
+        if (m_IsPress)
+        {
+            m_InteractObject.TriggerPress(m_InteractObject, GetMouseWorldPosition());
+        }
     }
 
     public Vector3 GetMouseWorldPosition()
@@ -52,8 +70,17 @@ public class BuildingInputSystem : MonoBehaviour
         }
     }
 
+    private void OnPerformedSelect(InputAction.CallbackContext context)
+    {
+        if (m_InteractObject)
+        {
+            m_IsPress = true;
+        }
+    }
+
     private void OnCanceledSelect(InputAction.CallbackContext context)
     {
+        m_IsPress = false;
         if (m_InteractObject)
         {
             m_InteractObject.TriggerInteractEnd(m_InteractObject, GetMouseWorldPosition());
@@ -65,7 +92,8 @@ public class BuildingInputSystem : MonoBehaviour
     {
         if (m_InteractObject)
         {
-            m_InteractObject.TriggerInteracting(m_InteractObject, GetMouseWorldPosition());
+            m_IsMove = true;
+            m_InteractObject.TriggerDrag(m_InteractObject, GetMouseWorldPosition());
         }
     }
 }
