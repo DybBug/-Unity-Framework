@@ -4,6 +4,7 @@ public class BuildingState_Idle : BuildingState
 {
     public BuildingState_Idle(Building ownerBuilding, Param stateParam) : base(ownerBuilding, stateParam)
     {
+
     }
 
     protected override void OnEnter()
@@ -12,7 +13,8 @@ public class BuildingState_Idle : BuildingState
         Owner.HideStateSprite();
         Owner.HidePlaceConfirmBubble();
 
-        Owner.OnSelectedEvent += OnInteractBegin;
+        Owner.OnSelectedEvent += OnSelected;
+        Owner.OnPressedEvent += OnPressed;
 
         if (!StateParam.isConstructionCompleted)
         {
@@ -22,7 +24,9 @@ public class BuildingState_Idle : BuildingState
 
     protected override void OnExit()
     {
-        Owner.OnSelectedEvent -= OnInteractBegin;
+        Owner.OnSelectedEvent -= OnSelected;
+        Owner.OnPressedEvent -= OnPressed;
+
     }
 
     protected override void OnUpdate()
@@ -30,7 +34,12 @@ public class BuildingState_Idle : BuildingState
         
     }
 
-    private void OnInteractBegin(InteractEventParam eventParam)
+    private void OnSelected(InteractEventParam eventParam)
+    {
+        
+    }
+
+    private void OnPressed(InteractEventParam eventParam)
     {
         Owner.TransitionState(Building.State.Relocation);
     }

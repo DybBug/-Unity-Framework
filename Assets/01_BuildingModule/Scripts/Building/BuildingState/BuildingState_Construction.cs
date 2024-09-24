@@ -38,6 +38,8 @@ public class BuildingState_Construction : BuildingState
 
         Owner.OnTopBubbleClickedEvent += OnTopBubbleClicked;
         Owner.OnSelectedEvent += OnInteractBegin;
+        Owner.OnPressedEvent += OnPressed;
+
         m_Timer.OnTimerFinishedEvent += OnFinishedConstruction;
     }
 
@@ -45,6 +47,7 @@ public class BuildingState_Construction : BuildingState
     {
         Owner.OnTopBubbleClickedEvent -= OnTopBubbleClicked;
         Owner.OnSelectedEvent -= OnInteractBegin;
+        Owner.OnPressedEvent -= OnPressed;
 
         if (m_Timer != null)
         {
@@ -73,6 +76,10 @@ public class BuildingState_Construction : BuildingState
 
     }
     private void OnInteractBegin(InteractEventParam eventParam)
+    {
+    }
+
+    private void OnPressed(InteractEventParam eventParam)
     {
         Owner.TransitionState(Building.State.Relocation);
     }

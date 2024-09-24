@@ -14,7 +14,7 @@ public class BuildingState_Relocation : BuildingState
 
         Owner.HideTopBubble();
         Owner.OnSelectedEvent += OnInteractBegin;
-        Owner.OnDragEvent += OnInteracting;
+        Owner.OnDragEvent += OnDrag;
         Owner.OnPlaceConfirmBubbleClickedEvent += OnPlaceConfirmBubble;
     }
 
@@ -26,7 +26,7 @@ public class BuildingState_Relocation : BuildingState
     protected override void OnExit()
     {
         Owner.OnSelectedEvent -= OnInteractBegin;
-        Owner.OnDragEvent -= OnInteracting;
+        Owner.OnDragEvent -= OnDrag;
     }
 
     private void OnInteractBegin(InteractEventParam eventParam)
@@ -34,7 +34,7 @@ public class BuildingState_Relocation : BuildingState
         BuildingSystem.Instance.TryPickup(Owner);
     }
 
-    private void OnInteracting(InteractEventParam eventParam)
+    private void OnDrag(InteractEventParam eventParam)
     {
         BuildingSystem.Instance.FollowBuilding(BuildingInputSystem.Instance.GetMouseWorldPosition());
     }

@@ -24,9 +24,14 @@ public class Building : MonoBehaviour
     public event UnityAction<InteractEventParam> OnSelectedEvent;
     public event UnityAction<InteractEventParam> OnDragEvent;
     public event UnityAction<InteractEventParam> OnUnselectedEvent;
+    public event UnityAction<InteractEventParam> OnPressedEvent;
 
     public event UnityAction OnTopBubbleClickedEvent;
     public event UnityAction OnPlaceConfirmBubbleClickedEvent;
+
+    private long m_PressedStartTimeMs;
+    private long m_PressedAccTimeMs;
+    private const long PRESSED_TIME_MS_TO_RELOCATION = 2000;
 
 
     private readonly Dictionary<Building.State, BuildingState> m_StateMap = new();
@@ -54,8 +59,9 @@ public class Building : MonoBehaviour
     {
         var interactObject = GetComponent<Interact>();
         interactObject.OnInteractBeginEvent += OnInteractBegin;
-        interactObject.OnInteractingEvent += OnInteracting;
+        interactObject.OnDragEvent += OnDrag;
         interactObject.OnInteractEndEvent += OnInteractEnd;
+        interactObject.OnPressEvent += OnPress;
 
         m_TopBubble.OnClickedEvent += OnTopBubbleClicked;
         m_PlaceConfirmBubble.OnClickedEvent += OnPlaceConfirmBubbleClicked;
@@ -65,8 +71,9 @@ public class Building : MonoBehaviour
     {
         var interactObject = GetComponent<Interact>();
         interactObject.OnInteractBeginEvent -= OnInteractBegin;
-        interactObject.OnInteractingEvent -= OnInteracting;
+        interactObject.OnDragEvent -= OnDrag;
         interactObject.OnInteractEndEvent -= OnInteractEnd;
+        interactObject.OnPressEvent -= OnPress;
 
         m_TopBubble.OnClickedEvent -= OnTopBubbleClicked;
         m_PlaceConfirmBubble.OnClickedEvent -= OnPlaceConfirmBubbleClicked;
@@ -132,10 +139,39 @@ public class Building : MonoBehaviour
     protected void OnPlaceConfirmBubbleClicked() => OnPlaceConfirmBubbleClickedEvent?.Invoke();
     protected void OnTopBubbleClicked() => OnTopBubbleClickedEvent?.Invoke();
 
+    protected bool IsActivatePress => m_PressedStartTimeMs > 0;
+
     #region InteractObject
-    protected void OnInteractBegin(InteractEventParam param) => OnSelectedEvent?.Invoke(param);
-    protected void OnInteracting(InteractEventParam param) => OnDragEvent?.Invoke(param);
-    protected void OnInteractEnd(InteractEventParam param) => OnUnselectedEvent?.Invoke(param);
+    protected void OnInteractBegin(InteractEventParam param)
+    {
+        m_PressedStartTimeMs = TimeUtil.NowUtc(false);
+        OnSelectedEvent?.Invoke(param);
+    }
+
+    protected void OnDrag(InteractEventParam param)
+    {
+        OnDragEvent?.Invoke(param);
+    }
+
+    protected void OnInteractEnd(InteractEventParam param)
+    {
+        m_PressedStartTimeMs = 0;
+        OnUnselectedEvent?.Invoke(param);
+    }
+
+    protected void OnPress(InteractEventParam param)
+    {
+        if (!IsActivatePress)
+            return;
+
+        m_PressedAccTimeMs = TimeUtil.NowUtc(false) - m_PressedStartTimeMs;
+        if (m_PressedAccTimeMs >= PRESSED_TIME_MS_TO_RELOCATION)
+        {
+            OnPressedEvent?.Invoke(param);
+            m_PressedAccTimeMs = 0;
+            m_PressedStartTimeMs = 0;
+        }
+    }
     #endregion
 
     public static Building Instantiate(string key)
