@@ -1,0 +1,83 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bbb281ee3bf0b054c82ac2347e9e782c, type: 3}
+  m_Name: Building
+  m_EditorClassIdentifier: 
+  m_GroupName: Building
+  m_GUID: 92bb2c5245c7ad64b8a4305022e2bebd
+  m_SerializeEntries:
+  - m_GUID: 15a16dc12e121964fa11bfd04144c5bc
+    m_Address: Close
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 24e28a6f8e1fc0145b5b55e9fc456dc9
+    m_Address: tile_007
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 250d6ac12ed8c7343a14a500374c8d89
+    m_Address: tile_003
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 28a16a1b17231c74182d31c2fa2c1e71
+    m_Address: House002
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2c4c1880548aa744388537b61915cdbe
+    m_Address: Checked
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2ffb5e09176c3544795827875e2b7883
+    m_Address: House001
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4940741ec05bfb44499bc2438ec67951
+    m_Address: TooltipSharpBackground
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 49f367a8091cf874f85c800da49236ca
+    m_Address: tile_001
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5be27429f79e7774a836b6d0caf96464
+    m_Address: House003
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: b8fc8fa66b79770429458535a2d8a0f9
+    m_Address: tile_000
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bb9ae2aa20173fe4cb92df0ba14f7b3c
+    m_Address: ShopBuilding
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e227692083ef27e45ae86d14c033f699
+    m_Address: Hourglass
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
+  m_ReadOnly: 0
+  m_Settings: {fileID: 11400000, guid: 900600dbc92dda848ade7244d82c0ff8, type: 2}
+  m_SchemaSet:
+    m_Schemas:
+    - {fileID: 11400000, guid: 3300a22b72d539c4dbd3505fa2291b4e, type: 2}
+    - {fileID: 11400000, guid: cb5e91ddf05621e4780a31d476474ca4, type: 2}
