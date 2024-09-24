@@ -39,7 +39,8 @@ public class BuildingListPopup : MonoBehaviour
         {
             var element = Instantiate(m_ElementPrefab);
             element.transform.SetParent(m_Content.transform, false);
-            element.Setup(BuildingTable.Instance.GetItemByKey(key), OnSelectedElement);
+            element.Setup(BuildingTable.Instance.GetItemByKey(key));
+            element.OnClickedEvent += OnSelectedElement;
             element.SetHighlight(false);
         }
     }
@@ -70,7 +71,7 @@ public class BuildingListPopup : MonoBehaviour
         if (m_SelectedElement == null)
             return;
 
-        BuildingSystem.Instance.CreateBuilding(m_SelectedElement.Item.Prefab);
+        BuildingSystem.Instance.CreateBuilding(m_SelectedElement.Item.Key);
         Close();
     }
 

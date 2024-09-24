@@ -45,6 +45,8 @@ public class TimerManager : MonoBehaviour
             while (m_IsRunning)
             {
                 await UniTask.Yield();
+                if (!m_IsRunning)
+                    break;
 
                 if (Timer.Status != TimerStatus.Running)
                     continue;

@@ -13,16 +13,15 @@ public class BuildingListElement : MonoBehaviour
 
     public BuildingTable.Item Item { get; private set; }
 
-    private event UnityAction<BuildingListElement, string/*key*/>  m_OnSelectEvent;
+    public event UnityAction<BuildingListElement, string/*key*/> OnClickedEvent;
 
     private void Awake()
     {
         m_Button.onClick.AddListener(OnClickedElement);
     }
 
-    public void Setup(BuildingTable.Item item, UnityAction<BuildingListElement, string> selectCB)
+    public void Setup(BuildingTable.Item item)
     {
-        m_OnSelectEvent = selectCB;
         Item = item;
 
         m_IconImage.sprite = Item.Sprite;
@@ -36,8 +35,5 @@ public class BuildingListElement : MonoBehaviour
 
     }
 
-    private void OnClickedElement()
-    {
-        m_OnSelectEvent?.Invoke(this, Item.Key);
-    }
+    private void OnClickedElement() => OnClickedEvent?.Invoke(this, Item.Key);
 }

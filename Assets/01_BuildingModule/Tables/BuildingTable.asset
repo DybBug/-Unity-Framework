@@ -15,22 +15,19 @@ MonoBehaviour:
   m_Items:
   - Key: 0
     Sprite: {fileID: 21300000, guid: 2ffb5e09176c3544795827875e2b7883, type: 3}
-    Prefab: {fileID: 7530757643168058854, guid: 97441dfe3fa1c314799632d4beef77cd,
-      type: 3}
+    Prefab: {fileID: 7292482626901107848, guid: 7944b05a42df8f144ab797a720acd85a, type: 3}
     Name: House1
     Description: This is House1
     TakeTimeSec: 5
   - Key: 1
     Sprite: {fileID: 21300000, guid: 28a16a1b17231c74182d31c2fa2c1e71, type: 3}
-    Prefab: {fileID: 7530757643168058854, guid: 09e5d87a2bc636e4aaeaebd0340de963,
-      type: 3}
+    Prefab: {fileID: 2367138292947296263, guid: 08bc27a408d84024fa3038a664a2ba8f, type: 3}
     Name: House2
     Description: This is house2
     TakeTimeSec: 10
   - Key: 2
     Sprite: {fileID: 21300000, guid: 5be27429f79e7774a836b6d0caf96464, type: 3}
-    Prefab: {fileID: 7530757643168058854, guid: b5b89812e3d420b479ae0846b87e04dc,
-      type: 3}
+    Prefab: {fileID: 1602536992154091509, guid: 36b6b071269f7044ea3fe42022f2a3cc, type: 3}
     Name: House3
     Description: This is House 3
     TakeTimeSec: 15

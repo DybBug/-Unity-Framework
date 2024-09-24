@@ -11,7 +11,7 @@ public enum TimerStatus
 
 public class Timer
 {
-    private event UnityAction<Timer> OnTimerFinished;
+    public event UnityAction<Timer> OnTimerFinishedEvent;
     public string Name { get; private set; }
     public TimerStatus Status { get; private set; }
     public long StartTimeMs { get; private set; }
@@ -32,23 +32,21 @@ public class Timer
         }
     }
 
-    public Timer(string name, long durationMs, UnityAction<Timer> timerFinishCallback)
+    public Timer(string name, long durationMs)
     {
         Status = TimerStatus.Waiting;
-        Name = name;
+        Name = $"{name}_{this.Guid}";
         m_DurationMs = durationMs;
-        OnTimerFinished = timerFinishCallback;
     }
 
-    public Timer(string name, long startTimeMs, long endTimeMs, UnityAction<Timer> timerEndCallback)
+    public Timer(string name, long startTimeMs, long endTimeMs)
     {
         Debug.Assert(startTimeMs <= endTimeMs);
         Status = TimerStatus.Waiting;
 
-        Name = name;
+        Name = $"{name}_{this.Guid}";
         StartTimeMs = startTimeMs;
         EndTimeMs = endTimeMs;
-        OnTimerFinished = timerEndCallback;
     }
 
     public void Play()
@@ -69,7 +67,7 @@ public class Timer
         m_DurationMs = -1;
         if (isNotify)
         {
-            OnTimerFinished?.Invoke(this);
+            OnTimerFinishedEvent?.Invoke(this);
         }
     }
 
@@ -103,7 +101,6 @@ public class Timer
 
         return (1.0f - (float)GetRemainTimeMs() / (float)m_DurationMs);
     }
-
 
     public long GetRemainTimeMs()
     {

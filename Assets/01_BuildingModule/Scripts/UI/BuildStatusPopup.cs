@@ -145,7 +145,8 @@ public class BuildStatusPopup : MonoBehaviour
         SetState(State.InProgress);
         if (_Timer == null)
         {
-            _Timer = new Timer("BuildTimer", m_StartTimeMs, m_EndTimeMs, OnFinishTimer);
+            _Timer = new Timer("BuildTimer", m_StartTimeMs, m_EndTimeMs);
+            _Timer.OnTimerFinishedEvent += OnFinishTimer;
             TimerManager.Instance.Register(_Timer, false);
         }
         else

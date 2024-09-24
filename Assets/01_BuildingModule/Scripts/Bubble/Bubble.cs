@@ -12,7 +12,8 @@ public class Bubble : MonoBehaviour
     public bool IsShow { get; private set; } = true;
     public bool IsActivate { get; private set; } = true;
 
-    private event UnityAction m_OnClicked;
+    public event UnityAction OnClickedEvent;
+
 
     #region Unity
 
@@ -25,22 +26,15 @@ public class Bubble : MonoBehaviour
     private void Start()
     {
         var interact = GetComponent<Interact>();
-        interact.Register(new InteractEventListener()
-        {
-            OnInteractBeginEvent = null,
-            OnInteractingEvent = null,
-            OnInteractEndEvent = OnInteractEnd
-        });
+        interact.OnInteractEndEvent += OnInteractEnd;
     }
 
     private void OnDestroy()
     {
-        UnregisterOnClickedListener();
+        
     }
-    #endregion
 
-    public void RegisterOnClickedListener(UnityAction onClickedListener) => m_OnClicked = onClickedListener;
-    public void UnregisterOnClickedListener() => m_OnClicked = null;
+    #endregion
     public void SetBackgroundSprite(Sprite sprite) => m_BackgroundSpriteRenderer.sprite = sprite;
     public void SetBackgroundColor(Color color) => m_BackgroundSpriteRenderer.color = color;
     public void SetImageSprite(Sprite sprite) => m_ImageSpriteRenderer.sprite = sprite;
@@ -50,7 +44,7 @@ public class Bubble : MonoBehaviour
         if (!IsActivate)
             return;
 
-        m_OnClicked?.Invoke();
+        OnClickedEvent?.Invoke();
     }
 
     public void Show() 
