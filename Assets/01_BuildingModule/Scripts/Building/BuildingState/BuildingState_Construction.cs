@@ -77,7 +77,7 @@ public class BuildingState_Construction : BuildingState
 
     private void OnBottomBubbleClicked()
     {
-        
+        var popup = UiManager.Instance.OpenView<BuildStatusPopup>("Popup_BuildingStatus");
     }
 
     private void OnFinishedConstruction(Timer arg0)

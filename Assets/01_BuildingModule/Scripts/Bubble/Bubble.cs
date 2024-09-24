@@ -34,6 +34,7 @@ public class Bubble : MonoBehaviour
         
     }
 
+
     #endregion
     public void SetBackgroundSprite(Sprite sprite) => m_BackgroundSpriteRenderer.sprite = sprite;
     public void SetBackgroundColor(Color color) => m_BackgroundSpriteRenderer.color = color;

@@ -2582,7 +2582,7 @@ GameObject:
   - component: {fileID: 6492987219670311444}
   - component: {fileID: 1843653015803134019}
   - component: {fileID: 1518140876740962835}
-  - component: {fileID: 4303642458814776598}
+  - component: {fileID: 6210347550236618752}
   m_Layer: 5
   m_Name: Popup_BuildingStatus
   m_TagString: Untagged
@@ -2607,10 +2607,10 @@ RectTransform:
   - {fileID: 4026982684112539408}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -160, y: -240}
+  m_SizeDelta: {x: 574, y: 636}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6492987219670311444
 CanvasRenderer:
@@ -2676,7 +2676,7 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &4303642458814776598
+--- !u!114 &6210347550236618752
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2685,9 +2685,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 8963630362587613153}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7920ec99ea74cb84188c1d98694ec3ad, type: 3}
+  m_Script: {fileID: 11500000, guid: c819f835f58cf9a4d8c3fb8a1d460853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_BindingObjects: []
   m_CloseButton: {fileID: 8301123174003283690}
   m_StartTimeText: {fileID: 2841805464761890947}
   m_EndTimeText: {fileID: 3663592025965922332}

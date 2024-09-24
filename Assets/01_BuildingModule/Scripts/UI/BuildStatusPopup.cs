@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuildStatusPopup : MonoBehaviour
+public class BuildStatusPopup : PopupView
 {
     private static Timer _Timer;
     private enum State
@@ -63,18 +63,8 @@ public class BuildStatusPopup : MonoBehaviour
         }
     }
 
-    public void Open()
-    {
-        gameObject.SetActive(true);
-        Initialize();
-    }
 
-    public void Close()
-    {
-        gameObject.SetActive(false);
-    }
-
-    private void Initialize()
+    protected override void OnInitialize()
     {
         if (_Timer == null || _Timer.Status != TimerStatus.Running)
         {
@@ -137,7 +127,7 @@ public class BuildStatusPopup : MonoBehaviour
 
     private void OnClickedCloseButton()
     {
-        Close();
+        UiManager.Instance.CloseView(this);
     }
 
     private void OnClickedStartButton()

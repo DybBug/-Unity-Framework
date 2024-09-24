@@ -66,8 +66,11 @@ public class BuildingInputSystem : MonoBehaviour
             if (collider.TryGetComponent<Interact>(out m_InteractObject))
             {
                 m_InteractObject.TriggerInteractBegin(m_InteractObject, mouseWorldPos);
+                return;
             }
         }
+
+
     }
 
     private void OnPerformedSelect(InputAction.CallbackContext context)

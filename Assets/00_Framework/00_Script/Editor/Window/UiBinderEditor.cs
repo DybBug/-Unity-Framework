@@ -7,7 +7,7 @@ using UnityEngine;
 
 public sealed class UiBinderEditor : EditorWindow
 {
-    private CommonUI m_CommonUI;
+    private UiElement m_CommonUI;
     private SerializedObject m_SerializedCommonUi;
 
     private SerializedProperty m_PropBindingObjects;
@@ -42,7 +42,7 @@ public sealed class UiBinderEditor : EditorWindow
     {      
         EditorGUI.BeginChangeCheck();
 
-        m_CommonUI = EditorGUILayout.ObjectField("바인딩할 UI", m_CommonUI, typeof(CommonUI), true) as CommonUI;
+        m_CommonUI = EditorGUILayout.ObjectField("바인딩할 UI", m_CommonUI, typeof(UiElement), true) as UiElement;
 
         // 에디터에 변경이 있는지 체크
         if (EditorGUI.EndChangeCheck())
@@ -125,7 +125,7 @@ public sealed class UiBinderEditor : EditorWindow
                 BindingData data = MakeBindingData(childName, child);
                 ApplyBindingObject(_prop, i, data);
  
-                if(!child.GetComponent<CommonUI>())
+                if(!child.GetComponent<UiElement>())
                 {
                     BindOjects(child, _prop);
                 }
