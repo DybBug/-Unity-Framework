@@ -41,7 +41,7 @@ public class UiManager : MonoBehaviour
 
     #endregion
 
-    public T MakeElement<T>(string name = null, RectTransform parent = null, UnityAction<T> onPreInitializeCB = null) where T : UiElement
+    public T MakeElement<T>(string name = null, RectTransform parent = null, UnityAction<T> onCompleteCb = null) where T : UiElement
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -50,12 +50,12 @@ public class UiManager : MonoBehaviour
         var prefab = AssetLoader.LoadPrefab(name);
         var uiElement = Instantiate(prefab, parent).GetComponent<T>();
         uiElement.transform.localPosition = Vector3.zero;
-        onPreInitializeCB?.Invoke(uiElement);
         uiElement.Initialize();
+        onCompleteCb?.Invoke(uiElement);
         return uiElement;
     }
 
-    public T OpenView<T>(string name, UnityAction<T> onPreInitializeCB = null) where T : ViewElement
+    public T OpenView<T>(string name, UnityAction<T> onCompleteCb = null) where T : ViewElement
     {
         if (!m_CachedViewElementsByName.TryGetValue(name, out var uiElement))
         {
@@ -71,11 +71,10 @@ public class UiManager : MonoBehaviour
         uiElement.transform.localPosition = Vector3.zero;
 
         var viewElement = uiElement as T;
-        onPreInitializeCB?.Invoke(viewElement);
 
-        viewElement.Initialize();
         viewElement.Open();
         viewElement.Enable();
+        onCompleteCb?.Invoke(viewElement);
         return viewElement;
     }
 
