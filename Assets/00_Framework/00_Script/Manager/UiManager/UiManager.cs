@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks.Triggers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.TextCore.Text;
 
 public class UiManager : MonoBehaviour
@@ -39,7 +41,7 @@ public class UiManager : MonoBehaviour
 
     #endregion
 
-    public T MakeElement<T>(string name = null, RectTransform parent = null) where T : UiElement
+    public T MakeElement<T>(string name = null, RectTransform parent = null, UnityAction<T> onPreInitializeCB = null) where T : UiElement
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -47,27 +49,34 @@ public class UiManager : MonoBehaviour
         }
         var prefab = AssetLoader.LoadPrefab(name);
         var uiElement = Instantiate(prefab, parent).GetComponent<T>();
+        uiElement.transform.localPosition = Vector3.zero;
+        onPreInitializeCB?.Invoke(uiElement);
         uiElement.Initialize();
         return uiElement;
     }
 
-    public T OpenView<T>(string name) where T : ViewElement
+    public T OpenView<T>(string name, UnityAction<T> onPreInitializeCB = null) where T : ViewElement
     {
-        if (!m_CachedViewElementsByName.TryGetValue(name, out var viewElement))
+        if (!m_CachedViewElementsByName.TryGetValue(name, out var uiElement))
         {
             var prefab = AssetLoader.LoadPrefab(name);
-            viewElement = Instantiate(prefab).GetComponent<T>();
-            viewElement.Initialize();
+            uiElement = Instantiate(prefab).GetComponent<T>();
+            uiElement.Initialize();
 
-            m_CachedViewElementsByName.Add(name, viewElement);
+            m_CachedViewElementsByName.Add(name, uiElement);
         }
 
-        m_OpenedViewElementByName.Add(name, viewElement);
-        viewElement.transform.SetParent(m_Canvas.gameObject.transform, false);
-        viewElement.transform.localPosition = Vector3.zero;
+        m_OpenedViewElementByName.Add(name, uiElement);
+        uiElement.transform.SetParent(m_Canvas.gameObject.transform, false);
+        uiElement.transform.localPosition = Vector3.zero;
+
+        var viewElement = uiElement as T;
+        onPreInitializeCB?.Invoke(viewElement);
+
+        viewElement.Initialize();
         viewElement.Open();
         viewElement.Enable();
-        return viewElement as T;
+        return viewElement;
     }
 
     public void CloseView(string name)
