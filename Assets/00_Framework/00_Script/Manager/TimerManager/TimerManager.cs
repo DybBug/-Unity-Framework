@@ -1,6 +1,7 @@
 using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TimerManager : MonoBehaviour
@@ -34,7 +35,6 @@ public class TimerManager : MonoBehaviour
         {
             Timer = timer;
             m_IsAutoUnregister = isAutoUnregister;
-            m_TimerManager = timerManager;
         }
 
         public async UniTaskVoid Run()
@@ -46,7 +46,12 @@ public class TimerManager : MonoBehaviour
             {
                 await UniTask.Yield();
                 if (!m_IsRunning)
+                {
+                    await UniTask.Yield();
+                    TimerManager.Instance.m_TimersTaskByGuid.Remove(Timer.Guid);
+                    Timer = null;
                     break;
+                }
 
                 if (Timer.Status != TimerStatus.Running)
                     continue;
@@ -65,7 +70,6 @@ public class TimerManager : MonoBehaviour
         public void Exit()
         {
             Timer.Stop(false);
-            Timer = null;
             m_TimerManager = null;
             m_IsRunning = false;
         }
@@ -84,6 +88,9 @@ public class TimerManager : MonoBehaviour
 
     public Timer GetTimerOrNull(string timerGuid)
     {
+        if (string.IsNullOrEmpty(timerGuid))
+            return null;
+
         return m_TimersTaskByGuid.TryGetValue(timerGuid, out var timerTask) ? timerTask.Timer : null;
     }
 
@@ -99,10 +106,9 @@ public class TimerManager : MonoBehaviour
 
     public void Unregister(Timer timer)
     {
-        if (!m_TimersTaskByGuid.TryGetValue(timer.Guid, out var timerStatus))
+        if (!m_TimersTaskByGuid.TryGetValue(timer.Guid, out var timerTask))
             return;
 
-        timerStatus.Exit();
-        m_TimersTaskByGuid.Remove(timer.Guid);
+        timerTask.Exit();       
     }
 }

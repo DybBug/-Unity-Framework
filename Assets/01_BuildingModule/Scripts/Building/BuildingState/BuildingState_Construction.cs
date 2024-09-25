@@ -1,10 +1,12 @@
 ﻿using BuildingModule;
 using System;
 using System.Diagnostics;
+using UnityEngine.Events;
 
 public class BuildingState_Construction : BuildingState
 {
-    private Timer m_Timer;
+    private string m_TimerGuid;
+    public Timer Timer => TimerManager.Instance.GetTimerOrNull(m_TimerGuid);
 
     public BuildingState_Construction(Building ownerBuilding, Param stateParam) : base(ownerBuilding, stateParam)
     {
@@ -16,7 +18,7 @@ public class BuildingState_Construction : BuildingState
         Owner.SetBottomBubbleSprite(AssetLoader.LoadSprite("Info"));
         Owner.HideBottomBubble();
 
-        if (m_Timer == null)
+        if (Timer == null)
         {
             Owner.SetTopBubbleSprite(AssetLoader.LoadSprite("Checked"));
             Owner.HideTopBubble();
@@ -26,14 +28,15 @@ public class BuildingState_Construction : BuildingState
 
             Owner.HideBottomBubble();
 
-            m_Timer = new Timer(Owner.Name, Owner.ProcessingDurationMs);
+            var timer = new Timer(Owner.Name, Owner.ProcessingDurationMs);
+            m_TimerGuid = timer.Guid;
 
-            TimerManager.Instance.Register(m_Timer, false);
-            m_Timer.Play();
+            TimerManager.Instance.Register(timer, false);
+            timer.Play();
         }
         else
         {
-            if (m_Timer.Status == TimerStatus.Finish)
+            if (Timer.Status == TimerStatus.Finish)
             {
                 Owner.ShowTopBubble();
             }
@@ -44,7 +47,7 @@ public class BuildingState_Construction : BuildingState
         Owner.OnSelectedEvent += OnInteractBegin;
         Owner.OnPressedEvent += OnPressed;
 
-        m_Timer.OnTimerFinishedEvent += OnFinishedConstruction;
+        Timer.OnTimerFinishedEvent += OnFinishedConstruction;
     }
 
     protected override void OnExit()
@@ -54,9 +57,9 @@ public class BuildingState_Construction : BuildingState
         Owner.OnSelectedEvent -= OnInteractBegin;
         Owner.OnPressedEvent -= OnPressed;
 
-        if (m_Timer != null)
+        if (Timer != null)
         {
-            m_Timer.OnTimerFinishedEvent -= OnFinishedConstruction;
+            Timer.OnTimerFinishedEvent -= OnFinishedConstruction;
         }
     }
 
@@ -66,18 +69,22 @@ public class BuildingState_Construction : BuildingState
     }
     #endregion
 
-    private void OnTopBubbleClicked()
+    public void Complete()
     {
         StateParam.isConstructionCompleted = true;
-        TimerManager.Instance.Unregister(m_Timer);
-        m_Timer.OnTimerFinishedEvent -= OnFinishedConstruction;
-        m_Timer = null;
+        Timer.OnTimerFinishedEvent -= OnFinishedConstruction;
+        TimerManager.Instance.Unregister(Timer);
         Owner.TransitionState(Building.State.Idle);
+    }
+
+    private void OnTopBubbleClicked()
+    {
+        Complete();
     }
 
     private void OnBottomBubbleClicked()
     {
-        var popup = UiManager.Instance.OpenView<BuildStatusPopup>("Popup_BuildingStatus");
+        var popup = UiManager.Instance.OpenView<BuildStatusPopup>("Popup_BuildingStatus", (popup) => popup.Setup(this));
     }
 
     private void OnFinishedConstruction(Timer arg0)

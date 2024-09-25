@@ -52,12 +52,7 @@ public class ButtonElement : UiElement
         }
     }
 
-    protected override void OnEnable()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    protected override void OnDisable()
+    protected override void OnTick(float dt)
     {
         throw new System.NotImplementedException();
     }

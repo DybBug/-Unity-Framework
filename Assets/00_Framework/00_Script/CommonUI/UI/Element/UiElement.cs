@@ -1,7 +1,5 @@
-﻿using Cysharp.Threading.Tasks.Triggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -42,6 +40,14 @@ public abstract class UiElement : MonoBehaviour
             Debug.Log($"{key} : {gameObj.name}");
         }
     }
+
+    private void Update()
+    {
+        if (!IsEnable)
+            return;
+
+        Tick(Time.deltaTime);
+    }
     #endregion
 
     #region FindObject
@@ -68,6 +74,7 @@ public abstract class UiElement : MonoBehaviour
     #endregion
 
     public void Initialize() => OnInitialize();
+    public void Tick(float dt) => OnTick(dt);
     public void Enable() 
     {
         IsEnable = true;
@@ -80,7 +87,6 @@ public abstract class UiElement : MonoBehaviour
     }
 
     protected abstract void OnInitialize();
-    protected abstract void OnEnable();
-    protected abstract void OnDisable();
+    protected abstract void OnTick(float dt);
 }
 

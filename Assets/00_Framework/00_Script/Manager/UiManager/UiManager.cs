@@ -1,9 +1,7 @@
-using Cysharp.Threading.Tasks.Triggers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.TextCore.Text;
 
 public class UiManager : MonoBehaviour
 {
@@ -41,7 +39,7 @@ public class UiManager : MonoBehaviour
 
     #endregion
 
-    public T MakeElement<T>(string name = null, RectTransform parent = null, UnityAction<T> onPreInitializeCB = null) where T : UiElement
+    public T MakeElement<T>(string name = null, RectTransform parent = null, UnityAction<T> onSuccessCb = null) where T : UiElement
     {
         if (string.IsNullOrEmpty(name))
         {
@@ -50,12 +48,12 @@ public class UiManager : MonoBehaviour
         var prefab = AssetLoader.LoadPrefab(name);
         var uiElement = Instantiate(prefab, parent).GetComponent<T>();
         uiElement.transform.localPosition = Vector3.zero;
-        onPreInitializeCB?.Invoke(uiElement);
         uiElement.Initialize();
+        onSuccessCb?.Invoke(uiElement);
         return uiElement;
     }
 
-    public T OpenView<T>(string name, UnityAction<T> onPreInitializeCB = null) where T : ViewElement
+    public T OpenView<T>(string name, UnityAction<T> onSuccessCb = null) where T : ViewElement
     {
         if (!m_CachedViewElementsByName.TryGetValue(name, out var uiElement))
         {
@@ -71,9 +69,8 @@ public class UiManager : MonoBehaviour
         uiElement.transform.localPosition = Vector3.zero;
 
         var viewElement = uiElement as T;
-        onPreInitializeCB?.Invoke(viewElement);
+        onSuccessCb?.Invoke(viewElement);
 
-        viewElement.Initialize();
         viewElement.Open();
         viewElement.Enable();
         return viewElement;
@@ -99,9 +96,9 @@ public class UiManager : MonoBehaviour
         if (item.Equals(default(KeyValuePair)))
             return;
 
-        item.Value.transform.SetParent(null);
         item.Value.Close();
         item.Value.Disable();
+        item.Value.transform.SetParent(null);
         m_OpenedViewElementByName.Remove(item.Key);
     }
 
