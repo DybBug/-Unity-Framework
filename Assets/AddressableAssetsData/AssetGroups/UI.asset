@@ -16,7 +16,7 @@ MonoBehaviour:
   m_GUID: 4cadf0f55844a8445ae62cf0cd67f200
   m_SerializeEntries:
   - m_GUID: 2d9379c5a9887114babfe380420e8d17
-    m_Address: Popup_BuildingStatus
+    m_Address: Popup_BuildingConstruction
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
