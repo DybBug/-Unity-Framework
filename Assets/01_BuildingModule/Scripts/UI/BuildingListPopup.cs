@@ -1,5 +1,6 @@
 using BuildingModule;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 public class BuildingListPopup : MonoBehaviour
@@ -71,7 +72,7 @@ public class BuildingListPopup : MonoBehaviour
         if (m_SelectedElement == null)
             return;
 
-        BuildingSystem.Instance.CreateBuilding(m_SelectedElement.Item.Key);
+        Building.Instantiate(m_SelectedElement.Item.Key);
         Close();
     }
 

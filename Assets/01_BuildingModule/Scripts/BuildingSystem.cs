@@ -32,15 +32,6 @@ namespace BuildingModule
 
         #endregion
 
-        public void CreateBuilding(string key)
-        {
-            m_PickedBuilding = Building.Instantiate(key);
-            if (TryPickup(m_PickedBuilding))
-            {
-                CheckBuildableCell(m_PickedBuilding);
-            }
-        }
-
         public bool TryPickup(Building building)
         {
             if (m_PickedBuilding != null)
@@ -59,6 +50,7 @@ namespace BuildingModule
                 tiles[i] = null;
             }
             m_BuildingTileMap.SetTilesBlock(copyArea, tiles);
+            CheckBuildableCell(m_PickedBuilding);
             return true;
         }
 
