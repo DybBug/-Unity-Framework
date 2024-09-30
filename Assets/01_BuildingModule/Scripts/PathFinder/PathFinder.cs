@@ -117,6 +117,7 @@ public class PathFinder
         var colDiff = (int)((lhs.Row < rhs.Row) ? (rhs.Row - lhs.Row) : (lhs.Row - rhs.Row));
         var rowDiff = (int)((lhs.Column < rhs.Column) ? (rhs.Column - lhs.Column) : (lhs.Column - rhs.Column));
         var diff = (colDiff < rowDiff) ? (rowDiff - colDiff) : (colDiff - rowDiff);
+        diff -= (int)lhs.TileType + (int)rhs.TileType;
 
         return (int)(MOVE_DIAGONAL_COST * Mathf.Min(colDiff, rowDiff) + MOVE_STRAIGHT_COST * diff);
     }

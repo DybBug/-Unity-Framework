@@ -25,9 +25,9 @@ public class CustomTile : Tile
     public enum TileType
     {
         None = -1,
+        Block,
         Ground,
         Path,
-        Block,
     }
 
     [SerializeField]
