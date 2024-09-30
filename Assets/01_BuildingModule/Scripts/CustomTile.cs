@@ -24,6 +24,7 @@ public class CustomTile : Tile
     [Serializable]
     public enum TileType
     {
+        None = -1,
         Ground,
         Path,
         Block,
@@ -37,6 +38,6 @@ public class CustomTile : Tile
         set { m_Type = value; }
     }
     public uint Key { get; private set; }
+
+
 }
-
-

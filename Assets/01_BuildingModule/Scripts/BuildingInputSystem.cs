@@ -23,6 +23,12 @@ public class BuildingInputSystem : MonoBehaviour
     private bool m_IsPress;
     private bool m_IsMove;
 
+    private bool m_IsSelectedStartPos;
+    private bool m_IsSelectedEndPos;
+    private Vector3 m_StartPos;
+    private Vector3 m_EndPos;
+    private PathFinder m_PathFinder = new();
+
     private void Awake()
     {
         m_Mouse = InputSystem.GetDevice<Mouse>();
@@ -60,6 +66,7 @@ public class BuildingInputSystem : MonoBehaviour
     private void OnStartedSelect(InputAction.CallbackContext context)
     {
         var mouseWorldPos = GetMouseWorldPosition();
+
         var collider = Physics2D.OverlapPoint(mouseWorldPos);
         if (collider != null)
         {
@@ -70,7 +77,16 @@ public class BuildingInputSystem : MonoBehaviour
             }
         }
 
-
+        if (!m_IsSelectedStartPos)
+        {
+            m_IsSelectedStartPos = true;
+            m_StartPos = mouseWorldPos;
+        }
+        else
+        {
+            m_IsSelectedEndPos = true;
+            m_EndPos = mouseWorldPos;
+        }
     }
 
     private void OnPerformedSelect(InputAction.CallbackContext context)
@@ -83,6 +99,20 @@ public class BuildingInputSystem : MonoBehaviour
 
     private void OnCanceledSelect(InputAction.CallbackContext context)
     {
+        if (m_IsSelectedEndPos)
+        {
+            m_IsSelectedStartPos = false;
+            m_IsSelectedEndPos = false;
+            var posList = m_PathFinder.FindPathOrNull(m_StartPos, m_EndPos);
+            if (posList != null)
+            {
+                for (var i = 0; i < posList.Count - 1; ++i)
+                {
+                    Debug.DrawLine(posList[i], posList[i + 1], Color.red, 10000);
+                }
+            }
+        }
+
         m_IsPress = false;
         if (m_InteractObject)
         {

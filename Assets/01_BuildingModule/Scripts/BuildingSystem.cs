@@ -1,7 +1,8 @@
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.Tilemaps;
+using static UnityEditor.PlayerSettings;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 namespace BuildingModule
 {
@@ -27,7 +28,7 @@ namespace BuildingModule
         // Start is called once before the first execution of Update after the MonoBehaviour is created
         void Start()
         {
-           
+
         }
 
         #endregion
@@ -91,6 +92,50 @@ namespace BuildingModule
             m_PickedBuilding = null;
         }
 
+        public Vector3Int ConvertWorldToCell(Vector3 pos)
+        {
+            pos.z = 0;
+            return m_GridLayout.WorldToCell(pos);
+        }
+
+        public Vector3 ConvertCellToWorld(Vector3Int cell)
+        {
+            cell.z = 0;
+            var worldPos = m_GridLayout.CellToWorld(cell);
+            if (m_GridLayout.cellLayout == GridLayout.CellLayout.Isometric)
+            {
+                worldPos.y += m_GridLayout.cellSize.y * 0.5f;
+            }
+            return worldPos;
+        }
+
+        public CustomTile FindTileOrNull(Vector3 pos)
+        {
+            return FindTileOrNull(ConvertWorldToCell(pos));
+        }
+
+        public CustomTile FindTileOrNull(int column, int row)
+        {
+            return FindTileOrNull(new Vector3Int(column, row));
+        }
+
+        public CustomTile.TileType GetTileType(int column, int row)
+        {
+            var cell = new Vector3Int(column, row);
+            var tile = m_BuildingTileMap.GetTile<CustomTile>(cell);
+            if (tile != null)
+            {
+                return tile.Type;
+            }
+
+            tile = m_MainTileMap.GetTile<CustomTile>(cell);
+            if (tile != null)
+            {
+                return tile.Type;
+            }
+            return CustomTile.TileType.None;
+        }
+
         private bool CheckBuildableCell(Building Building)
         {
             var buildingArea = Building.Area;
@@ -129,5 +174,16 @@ namespace BuildingModule
  
             return mainTiles.Select(e => e as CustomTile).Any(e => e == null || e.Type == CustomTile.TileType.Block) ? false : true;
         }
+
+        private CustomTile FindTileOrNull(Vector3Int cell)
+        {
+            var tile = m_BuildingTileMap.GetTile<CustomTile>(cell);
+            if (tile == null)
+            {
+                tile = m_MainTileMap.GetTile<CustomTile>(cell);
+            }
+            return tile;
+        }
+
     }
 }
