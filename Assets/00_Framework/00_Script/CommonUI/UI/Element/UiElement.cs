@@ -29,16 +29,17 @@ public abstract class UiElement : MonoBehaviour
             RectTransform bindingObj = m_BindingObjects[i].BindingObject;
             m_CachedObjectMap.Add(key, bindingObj);
         }
+        m_BindingObjects.Clear();
     }
 
     private void Start()
     {
-        for(var iter = m_CachedObjectMap.GetEnumerator(); iter.MoveNext(); )
-        {
-            string key = iter.Current.Key;
-            var gameObj = iter.Current.Value;
-            Debug.Log($"{key} : {gameObj.name}");
-        }
+        //for(var iter = m_CachedObjectMap.GetEnumerator(); iter.MoveNext(); )
+        //{
+        //    string key = iter.Current.Key;
+        //    var gameObj = iter.Current.Value;
+        //    Debug.Log($"{key} : {gameObj.name}");
+        //}
     }
 
     private void Update()

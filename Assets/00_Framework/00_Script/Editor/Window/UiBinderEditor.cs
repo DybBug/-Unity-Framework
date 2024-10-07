@@ -124,12 +124,8 @@ public sealed class UiBinderEditor : EditorWindow
             {
                 BindingData data = MakeBindingData(childName, child);
                 ApplyBindingObject(_prop, i, data);
- 
-                if(!child.GetComponent<UiElement>())
-                {
-                    BindOjects(child, _prop);
-                }
             }
+            BindOjects(child, _prop);
         }
     }
 
@@ -143,8 +139,9 @@ public sealed class UiBinderEditor : EditorWindow
 
     private void ApplyBindingObject(SerializedProperty _prop,int _index, in BindingData _data)
     {
-        _prop.InsertArrayElementAtIndex(_index);
-        var element = _prop.GetArrayElementAtIndex(_index);
+        var arraySize = _prop.arraySize;
+        _prop.InsertArrayElementAtIndex(arraySize);
+        var element = _prop.GetArrayElementAtIndex(arraySize);
 
         element.FindPropertyRelative("Key").stringValue = _data.Key;
         element.FindPropertyRelative("BindingObject").objectReferenceValue = _data.BindingObject;
